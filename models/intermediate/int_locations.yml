@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_locations
+    description: Addresses enriched with state/province and country. One row per address.
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_person_address')
+    columns:
+      - name: address_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: city
+        data_tests:
+          - not_null
+      - name: state_province_name
+        data_tests:
+          - not_null
+      - name: country_region_name
+        data_tests:
+          - not_null

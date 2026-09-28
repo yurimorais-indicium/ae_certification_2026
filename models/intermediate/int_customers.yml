@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_customers
+    description: >
+      Customers enriched with person and store names. One row per customer.
+      Store customers are named after the store; individuals after the person.
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_sales_customer')
+    columns:
+      - name: customer_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: Store name for store customers, otherwise the person's full name.
+        data_tests:
+          - not_null
+      - name: customer_type
+        description: "'Store' (reseller) or 'Individual'."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Store', 'Individual']

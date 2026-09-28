@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: int_products
+    description: Products enriched with subcategory and category names. One row per product.
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_production_product')
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: subcategory_name
+        description: Product subcategory; 'Uncategorized' for components without subcategory.
+        data_tests:
+          - not_null
+      - name: category_name
+        description: Product category; 'Uncategorized' for components without subcategory.
+        data_tests:
+          - not_null

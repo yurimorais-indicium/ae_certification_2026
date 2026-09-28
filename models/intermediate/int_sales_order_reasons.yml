@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: int_sales_order_reasons
+    description: >
+      Every sales order paired with its sales reasons (0 to N). Orders without a
+      reason appear once with a null sales_reason_id. One row per order x reason.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - sales_order_id
+              - sales_reason_id
+    columns:
+      - name: sales_order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sales_sales_order_header')
+                field: sales_order_id
+      - name: sales_reason_id
+        description: Null when the order has no sales reason.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_sales_sales_reason')
+                field: sales_reason_id
