@@ -1,0 +1,20 @@
+# dbt
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Credenciais
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+
+# Entregáveis e material do curso
+*.pdf
+*.pbix
+*.mp4
+*.pptx
