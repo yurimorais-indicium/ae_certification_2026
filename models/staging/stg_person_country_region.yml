@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_person_country_region
+    description: Countries and regions. Fixes Namibia's ISO code loaded as null.
+    columns:
+      - name: country_region_code
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

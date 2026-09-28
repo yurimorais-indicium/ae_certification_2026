@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_person_state_province
+    description: States and provinces.
+    columns:
+      - name: state_province_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

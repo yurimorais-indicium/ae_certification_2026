@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_person_address
+    description: Street addresses.
+    columns:
+      - name: address_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

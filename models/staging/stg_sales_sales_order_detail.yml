@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_sales_sales_order_detail
+    description: Sales order lines, one row per order line.
+    columns:
+      - name: sales_order_detail_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_sales_credit_card
+    description: Credit cards. Card number and expiration are intentionally excluded.
+    columns:
+      - name: credit_card_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

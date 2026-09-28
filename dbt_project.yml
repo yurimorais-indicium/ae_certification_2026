@@ -3,6 +3,8 @@ version: '1.0.0'
 
 profile: 'adventure_works'
 
+require-dbt-version: [">=1.10.0", "<2.0.0"]
+
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]

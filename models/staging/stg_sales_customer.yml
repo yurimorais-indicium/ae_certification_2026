@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_sales_customer
+    description: Customers (individuals and stores).
+    columns:
+      - name: customer_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

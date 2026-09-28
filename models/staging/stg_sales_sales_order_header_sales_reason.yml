@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_sales_sales_order_header_sales_reason
+    description: Associative table between sales orders and sales reasons (many-to-many).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - sales_order_id
+              - sales_reason_id
+    columns:
+      - name: sales_order_id
+        data_tests:
+          - not_null
+      - name: sales_reason_id
+        data_tests:
+          - not_null

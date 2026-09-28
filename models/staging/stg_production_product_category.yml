@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_production_product_category
+    description: Product categories.
+    columns:
+      - name: product_category_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

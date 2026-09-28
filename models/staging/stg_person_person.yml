@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_person_person
+    description: People (customers, employees, contacts).
+    columns:
+      - name: person_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

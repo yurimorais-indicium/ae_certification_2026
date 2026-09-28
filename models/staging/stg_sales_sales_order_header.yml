@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_sales_sales_order_header
+    description: Sales orders, one row per order. Renamed and typed from the raw source.
+    columns:
+      - name: sales_order_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null

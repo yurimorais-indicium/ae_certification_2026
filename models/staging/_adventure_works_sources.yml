@@ -1,0 +1,204 @@
+version: 2
+
+sources:
+  - name: adventure_works
+    description: Raw Adventure Works OLTP data (PostgreSQL) ingested into Databricks.
+    database: fea_academy
+    schema: adventure_works
+    tables:
+      - name: sales_salesorderheader
+        description: One row per sales order.
+        columns:
+          - name: salesorderid
+            data_tests:
+              - unique
+              - not_null
+          - name: customerid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'sales_customer')
+                    field: customerid
+          - name: shiptoaddressid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'person_address')
+                    field: addressid
+          - name: creditcardid
+            data_tests:
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'sales_creditcard')
+                    field: creditcardid
+          - name: orderdate
+            data_tests:
+              - not_null
+
+      - name: sales_salesorderdetail
+        description: One row per sales order line.
+        columns:
+          - name: salesorderdetailid
+            data_tests:
+              - unique
+              - not_null
+          - name: salesorderid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'sales_salesorderheader')
+                    field: salesorderid
+          - name: productid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'production_product')
+                    field: productid
+          - name: orderqty
+            data_tests:
+              - not_null
+          - name: unitprice
+            data_tests:
+              - not_null
+
+      - name: sales_salesorderheadersalesreason
+        description: Associative table between sales orders and sales reasons (many-to-many).
+        data_tests:
+          - dbt_utils.unique_combination_of_columns:
+              arguments:
+                combination_of_columns:
+                  - salesorderid
+                  - salesreasonid
+        columns:
+          - name: salesorderid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'sales_salesorderheader')
+                    field: salesorderid
+          - name: salesreasonid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'sales_salesreason')
+                    field: salesreasonid
+
+      - name: sales_salesreason
+        description: Lookup of reasons a customer gave for buying.
+        columns:
+          - name: salesreasonid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: sales_creditcard
+        description: Customer credit card information.
+        columns:
+          - name: creditcardid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: sales_customer
+        description: Current customer information (individuals and stores).
+        columns:
+          - name: customerid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: sales_store
+        description: Customers that are resellers (stores).
+        columns:
+          - name: businessentityid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: person_person
+        description: People involved with Adventure Works (customers, employees, contacts).
+        columns:
+          - name: businessentityid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: person_address
+        description: Street address information for customers, employees and vendors.
+        columns:
+          - name: addressid
+            data_tests:
+              - unique
+              - not_null
+          - name: stateprovinceid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'person_stateprovince')
+                    field: stateprovinceid
+
+      - name: person_stateprovince
+        description: State and province lookup.
+        columns:
+          - name: stateprovinceid
+            data_tests:
+              - unique
+              - not_null
+          - name: countryregioncode
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'person_countryregion')
+                    field: countryregioncode
+
+      - name: person_countryregion
+        description: Country and region lookup (ISO codes).
+        columns:
+          - name: countryregioncode
+            description: >
+              Known issue: Namibia's ISO code 'NA' was loaded as null during ingestion.
+              Kept as a warning here and fixed in stg_person_country_region.
+            data_tests:
+              - unique
+              - not_null:
+                  config:
+                    severity: warn
+
+      - name: production_product
+        description: Products sold or used in the manufacturing of sold products.
+        columns:
+          - name: productid
+            data_tests:
+              - unique
+              - not_null
+
+      - name: production_productsubcategory
+        description: Product subcategories.
+        columns:
+          - name: productsubcategoryid
+            data_tests:
+              - unique
+              - not_null
+          - name: productcategoryid
+            data_tests:
+              - not_null
+              - relationships:
+                  arguments:
+                    to: source('adventure_works', 'production_productcategory')
+                    field: productcategoryid
+
+      - name: production_productcategory
+        description: High-level product categories.
+        columns:
+          - name: productcategoryid
+            data_tests:
+              - unique
+              - not_null

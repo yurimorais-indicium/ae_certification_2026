@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_sales_store
+    description: Reseller stores.
+    columns:
+      - name: store_id
+        description: Primary key.
+        data_tests:
+          - unique
+          - not_null
