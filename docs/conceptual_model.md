@@ -51,7 +51,7 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
 
 ## Dimensions
 
-**`dim_product`** — `product_sk`, `product_id`, `product_name`, `product_number`, `color`, `size`, `product_line`, `class`, `style`, `standard_cost`, `list_price`, `subcategory_name`, `category_name`.
+**`dim_product`** — `product_sk`, `product_id`, `product_name`, `product_number`, `color`, `size`, `product_line`, `product_class`, `product_style`, `standard_cost`, `list_price`, `subcategory_name`, `category_name`.
 
 **`dim_customer`** — `customer_sk`, `customer_id`, `customer_name`, `customer_type`, `person_id`, `store_id`, `store_name`.
 

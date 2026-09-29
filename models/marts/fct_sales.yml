@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: fct_sales
+    description: >
+      Sales fact table. One row per sales order line. Order-level attributes
+      (dates, status, channel) are denormalized onto each line. Headline metric:
+      gross_amount (total transaction value). Sales reasons are reached through
+      bridge_sales_order_reason.
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('int_sales_order_items')
+    columns:
+      - name: sales_sk
+        description: Surrogate key (hash of sales_order_detail_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: sales_order_detail_id
+        description: Order line natural key from the source system.
+        data_tests:
+          - unique
+          - not_null
+      - name: sales_order_id
+        description: Sales order number (degenerate dimension). Use a distinct count to count orders.
+        data_tests:
+          - not_null
+      - name: product_sk
+        description: Foreign key to dim_product.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_sk
+      - name: customer_sk
+        description: Foreign key to dim_customer.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_sk
+      - name: ship_to_location_sk
+        description: Foreign key to dim_location (order ship-to address).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_location')
+                field: location_sk
+      - name: credit_card_sk
+        description: Foreign key to dim_credit_card. Points to 'No credit card' when the order has no card.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_credit_card')
+                field: credit_card_sk
+      - name: order_date
+        description: Date the order was placed. Foreign key to dim_date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: ship_date
+        description: Date the order was shipped.
+      - name: due_date
+        description: Date the order is due to the customer.
+      - name: order_status
+        description: Order status code (1 to 6).
+      - name: order_status_name
+        description: Order status (In process, Approved, Backordered, Rejected, Shipped, Cancelled).
+        data_tests:
+          - not_null
+      - name: is_online_order
+        description: True when the order was placed online by the customer; false when placed by a sales person.
+      - name: order_quantity
+        description: Units purchased in the order line.
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 1
+      - name: unit_price
+        description: Selling price of a single unit.
+      - name: unit_price_discount_pct
+        description: Discount applied to the unit price, as a fraction (0.10 = 10%).
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 1
+      - name: gross_amount
+        description: Gross revenue = order_quantity * unit_price. Total transaction value (headline metric).
+        data_tests:
+          - not_null
+      - name: discount_amount
+        description: Discount = order_quantity * unit_price * unit_price_discount_pct.
+      - name: net_amount
+        description: Net revenue = gross_amount - discount_amount. Used for the average order value.

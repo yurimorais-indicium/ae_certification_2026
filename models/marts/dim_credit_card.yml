@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_credit_card
+    description: >
+      Credit card dimension. One row per credit card plus a 'No credit card'
+      member (credit_card_id = -1) for orders paid without a card. Card number
+      and expiration are intentionally excluded.
+    columns:
+      - name: credit_card_sk
+        description: Surrogate key (hash of credit_card_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: credit_card_id
+        description: Credit card natural key. -1 for the 'No credit card' member.
+        data_tests:
+          - unique
+          - not_null
+      - name: card_type
+        description: Card brand (ColonialVoice, Distinguish, SuperiorCard, Vista) or 'No credit card'.
+        data_tests:
+          - not_null

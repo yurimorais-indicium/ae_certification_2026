@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: dim_sales_reason
+    description: >
+      Sales reason dimension. One row per reason plus a 'No reason' member
+      (sales_reason_id = -1). Related to fct_sales through bridge_sales_order_reason.
+    columns:
+      - name: sales_reason_sk
+        description: Surrogate key (hash of sales_reason_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: sales_reason_id
+        description: Sales reason natural key. -1 for the 'No reason' member.
+        data_tests:
+          - unique
+          - not_null
+      - name: sales_reason_name
+        description: Reason the customer gave for the purchase (e.g. Price, On Promotion).
+        data_tests:
+          - not_null
+      - name: sales_reason_type
+        description: Reason group (Other, Promotion, Marketing) or 'No reason'.
+        data_tests:
+          - not_null

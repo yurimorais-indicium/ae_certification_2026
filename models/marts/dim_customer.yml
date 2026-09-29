@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: >
+      Customer dimension. One row per customer. Resellers are named after the
+      store; individuals after the person.
+    columns:
+      - name: customer_sk
+        description: Surrogate key (hash of customer_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: Customer natural key from the source system.
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: Store name for resellers, otherwise the person's full name.
+        data_tests:
+          - not_null
+      - name: customer_type
+        description: "'Store' (reseller, the linked person is only the store contact) or 'Individual'."
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Store', 'Individual']
+      - name: person_id
+        description: Person natural key. For resellers, the store contact.
+      - name: store_id
+        description: Store natural key. Null for individual customers.
+      - name: store_name
+        description: Store name. Null for individual customers.

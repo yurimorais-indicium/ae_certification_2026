@@ -1,0 +1,8 @@
+version: 2
+
+data_tests:
+  - name: assert_gross_sales_2011_matches_audit
+    description: >
+      Audit reconciliation requested by the CEO. Gross sales for 2011
+      (sum of fct_sales.gross_amount) must equal $12,646,112.16, the figure
+      verified by the accounting audit team.

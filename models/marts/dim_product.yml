@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: Product dimension with subcategory and category. One row per product.
+    columns:
+      - name: product_sk
+        description: Surrogate key (hash of product_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_id
+        description: Product natural key from the source system.
+        data_tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: Product name.
+        data_tests:
+          - not_null
+      - name: product_number
+        description: Unique product identification number (SKU).
+      - name: color
+        description: Product color.
+      - name: size
+        description: Product size.
+      - name: product_line
+        description: "R = Road, M = Mountain, T = Touring, S = Standard."
+      - name: product_class
+        description: "H = High, M = Medium, L = Low."
+      - name: product_style
+        description: "W = Womens, M = Mens, U = Universal."
+      - name: standard_cost
+        description: Standard cost of the product.
+      - name: list_price
+        description: Selling list price.
+      - name: subcategory_name
+        description: Product subcategory (e.g. Mountain Bikes). 'Uncategorized' for components.
+        data_tests:
+          - not_null
+      - name: category_name
+        description: Product category (Bikes, Components, Clothing, Accessories). 'Uncategorized' for components.
+        data_tests:
+          - not_null

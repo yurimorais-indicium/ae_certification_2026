@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: >
+      Calendar dimension, one row per day from 2011-01-01 to 2014-12-31
+      (covers the full order date range). Joined to fct_sales on order_date.
+    columns:
+      - name: date_day
+        description: Calendar date. Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: year
+        description: Calendar year (e.g. 2013).
+      - name: quarter
+        description: Calendar quarter (1 to 4).
+      - name: month
+        description: Month number (1 to 12).
+      - name: month_name
+        description: Month name in English (e.g. January).
+      - name: year_month
+        description: Year and month in yyyy-MM format, for time series axes.
+      - name: day_of_week
+        description: Day of week number (1 = Sunday, 7 = Saturday).
+      - name: day_name
+        description: Day of week name in English (e.g. Monday).
+      - name: is_weekend
+        description: True when the date falls on Saturday or Sunday.

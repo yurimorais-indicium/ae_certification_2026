@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: dim_location
+    description: >
+      Location dimension at address level, with city, state/province and country.
+      One row per address. Joined to fct_sales on the order ship-to address.
+    columns:
+      - name: location_sk
+        description: Surrogate key (hash of address_id). Primary key.
+        data_tests:
+          - unique
+          - not_null
+      - name: address_id
+        description: Address natural key from the source system.
+        data_tests:
+          - unique
+          - not_null
+      - name: city
+        description: City name.
+        data_tests:
+          - not_null
+      - name: postal_code
+        description: Postal code.
+      - name: state_province_code
+        description: State or province ISO code.
+      - name: state_province_name
+        description: State or province name.
+        data_tests:
+          - not_null
+      - name: country_region_code
+        description: Country ISO code.
+      - name: country_region_name
+        description: Country name.
+        data_tests:
+          - not_null

@@ -27,3 +27,6 @@ models:
     marts:
       +materialized: table
       +schema: marts
+      +persist_docs:
+        relation: true
+        columns: true

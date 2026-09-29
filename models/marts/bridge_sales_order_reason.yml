@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: bridge_sales_order_reason
+    description: >
+      Bridge between fct_sales and dim_sales_reason resolving the many-to-many
+      relationship (an order has 0 to 3 reasons). One row per sales order x reason.
+      Totals per reason are correct, but summing across reasons double counts
+      orders with more than one reason.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - sales_order_id
+              - sales_reason_sk
+    columns:
+      - name: sales_order_id
+        description: Sales order number. Joins to fct_sales.sales_order_id.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_sales')
+                field: sales_order_id
+      - name: sales_reason_sk
+        description: Foreign key to dim_sales_reason.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sales_reason')
+                field: sales_reason_sk
