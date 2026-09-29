@@ -15,7 +15,10 @@ with
     )
 
     , final as (
-        select *
+        select
+            credit_card_id
+            , card_type
+            , modified_at
         from renamed
     )
 

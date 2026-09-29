@@ -20,7 +20,16 @@ with
     )
 
     , final as (
-        select *
+        select
+            sales_order_detail_id
+            , sales_order_id
+            , carrier_tracking_number
+            , order_quantity
+            , product_id
+            , special_offer_id
+            , unit_price
+            , unit_price_discount_pct
+            , modified_at
         from renamed
     )
 

@@ -35,7 +35,30 @@ with
     )
 
     , final as (
-        select *
+        select
+            product_id
+            , product_name
+            , product_number
+            , is_manufactured_in_house
+            , is_finished_good
+            , color
+            , safety_stock_level
+            , reorder_point
+            , standard_cost
+            , list_price
+            , size
+            , size_unit_measure_code
+            , weight_unit_measure_code
+            , weight
+            , days_to_manufacture
+            , product_line
+            , product_class
+            , product_style
+            , product_subcategory_id
+            , product_model_id
+            , sell_start_date
+            , sell_end_date
+            , modified_at
         from renamed
     )
 

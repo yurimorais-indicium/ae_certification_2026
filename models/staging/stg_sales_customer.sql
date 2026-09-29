@@ -16,7 +16,12 @@ with
     )
 
     , final as (
-        select *
+        select
+            customer_id
+            , person_id
+            , store_id
+            , territory_id
+            , modified_at
         from renamed
     )
 

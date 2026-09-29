@@ -15,7 +15,11 @@ with
     )
 
     , final as (
-        select *
+        select
+            product_subcategory_id
+            , product_category_id
+            , product_subcategory_name
+            , modified_at
         from renamed
     )
 

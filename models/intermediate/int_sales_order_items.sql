@@ -6,12 +6,29 @@
 
 with
     order_details as (
-        select *
+        select
+            sales_order_detail_id
+            , sales_order_id
+            , product_id
+            , special_offer_id
+            , order_quantity
+            , unit_price
+            , unit_price_discount_pct
         from {{ ref('stg_sales_sales_order_detail') }}
     )
 
     , order_headers as (
-        select *
+        select
+            sales_order_id
+            , customer_id
+            , ship_to_address_id
+            , bill_to_address_id
+            , credit_card_id
+            , order_date
+            , due_date
+            , ship_date
+            , order_status
+            , is_online_order
         from {{ ref('stg_sales_sales_order_header') }}
     )
 
@@ -56,7 +73,25 @@ with
 
     , final as (
         select
-            *
+            sales_order_detail_id
+            , sales_order_id
+            , product_id
+            , special_offer_id
+            , customer_id
+            , ship_to_address_id
+            , bill_to_address_id
+            , credit_card_id
+            , order_date
+            , due_date
+            , ship_date
+            , order_status
+            , order_status_name
+            , is_online_order
+            , order_quantity
+            , unit_price
+            , unit_price_discount_pct
+            , gross_amount
+            , discount_amount
             , gross_amount - discount_amount as net_amount
         from joined
     )

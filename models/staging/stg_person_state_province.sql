@@ -18,7 +18,14 @@ with
     )
 
     , final as (
-        select *
+        select
+            state_province_id
+            , state_province_code
+            , country_region_code
+            , is_only_state_province
+            , state_province_name
+            , territory_id
+            , modified_at
         from renamed
     )
 

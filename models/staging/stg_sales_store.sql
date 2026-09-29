@@ -15,7 +15,11 @@ with
     )
 
     , final as (
-        select *
+        select
+            store_id
+            , store_name
+            , sales_person_id
+            , modified_at
         from renamed
     )
 

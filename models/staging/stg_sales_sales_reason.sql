@@ -16,7 +16,11 @@ with
     )
 
     , final as (
-        select *
+        select
+            sales_reason_id
+            , sales_reason_name
+            , sales_reason_type
+            , modified_at
         from renamed
     )
 

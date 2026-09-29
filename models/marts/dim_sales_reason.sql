@@ -22,9 +22,17 @@ with
     )
 
     , unioned as (
-        select * from sales_reasons
+        select
+            sales_reason_id
+            , sales_reason_name
+            , sales_reason_type
+        from sales_reasons
         union all
-        select * from no_reason
+        select
+            sales_reason_id
+            , sales_reason_name
+            , sales_reason_type
+        from no_reason
     )
 
     , final as (

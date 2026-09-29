@@ -6,7 +6,9 @@
 
 with
     order_reasons as (
-        select *
+        select
+            sales_order_id
+            , sales_reason_id
         from {{ ref('int_sales_order_reasons') }}
     )
 

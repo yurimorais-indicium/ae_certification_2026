@@ -6,17 +6,27 @@
 
 with
     addresses as (
-        select *
+        select
+            address_id
+            , city
+            , postal_code
+            , state_province_id
         from {{ ref('stg_person_address') }}
     )
 
     , state_provinces as (
-        select *
+        select
+            state_province_id
+            , state_province_code
+            , state_province_name
+            , country_region_code
         from {{ ref('stg_person_state_province') }}
     )
 
     , country_regions as (
-        select *
+        select
+            country_region_code
+            , country_region_name
         from {{ ref('stg_person_country_region') }}
     )
 

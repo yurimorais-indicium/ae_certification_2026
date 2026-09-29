@@ -18,7 +18,14 @@ with
     )
 
     , final as (
-        select *
+        select
+            address_id
+            , address_line_1
+            , address_line_2
+            , city
+            , state_province_id
+            , postal_code
+            , modified_at
         from renamed
     )
 

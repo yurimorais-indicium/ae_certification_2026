@@ -6,17 +6,27 @@
 
 with
     customers as (
-        select *
+        select
+            customer_id
+            , person_id
+            , store_id
+            , territory_id
         from {{ ref('stg_sales_customer') }}
     )
 
     , persons as (
-        select *
+        select
+            person_id
+            , first_name
+            , middle_name
+            , last_name
         from {{ ref('stg_person_person') }}
     )
 
     , stores as (
-        select *
+        select
+            store_id
+            , store_name
         from {{ ref('stg_sales_store') }}
     )
 

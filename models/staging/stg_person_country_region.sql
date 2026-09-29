@@ -20,7 +20,10 @@ with
     )
 
     , final as (
-        select *
+        select
+            country_region_code
+            , country_region_name
+            , modified_at
         from renamed
     )
 

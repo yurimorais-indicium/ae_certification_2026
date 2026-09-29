@@ -6,7 +6,14 @@
 
 with
     locations as (
-        select *
+        select
+            address_id
+            , city
+            , postal_code
+            , state_province_code
+            , state_province_name
+            , country_region_code
+            , country_region_name
         from {{ ref('int_locations') }}
     )
 

@@ -20,9 +20,15 @@ with
     )
 
     , unioned as (
-        select * from credit_cards
+        select
+            credit_card_id
+            , card_type
+        from credit_cards
         union all
-        select * from no_credit_card
+        select
+            credit_card_id
+            , card_type
+        from no_credit_card
     )
 
     , final as (

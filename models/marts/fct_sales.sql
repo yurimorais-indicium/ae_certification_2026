@@ -6,7 +6,25 @@
 
 with
     order_items as (
-        select *
+        select
+            sales_order_detail_id
+            , sales_order_id
+            , product_id
+            , customer_id
+            , ship_to_address_id
+            , credit_card_id
+            , order_date
+            , ship_date
+            , due_date
+            , order_status
+            , order_status_name
+            , is_online_order
+            , order_quantity
+            , unit_price
+            , unit_price_discount_pct
+            , gross_amount
+            , discount_amount
+            , net_amount
         from {{ ref('int_sales_order_items') }}
     )
 

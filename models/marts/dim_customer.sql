@@ -6,7 +6,13 @@
 
 with
     customers as (
-        select *
+        select
+            customer_id
+            , customer_name
+            , customer_type
+            , person_id
+            , store_id
+            , store_name
         from {{ ref('int_customers') }}
     )
 

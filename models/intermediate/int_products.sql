@@ -6,17 +6,36 @@
 
 with
     products as (
-        select *
+        select
+            product_id
+            , product_name
+            , product_number
+            , color
+            , size
+            , product_line
+            , product_class
+            , product_style
+            , standard_cost
+            , list_price
+            , is_finished_good
+            , sell_start_date
+            , sell_end_date
+            , product_subcategory_id
         from {{ ref('stg_production_product') }}
     )
 
     , product_subcategories as (
-        select *
+        select
+            product_subcategory_id
+            , product_category_id
+            , product_subcategory_name
         from {{ ref('stg_production_product_subcategory') }}
     )
 
     , product_categories as (
-        select *
+        select
+            product_category_id
+            , product_category_name
         from {{ ref('stg_production_product_category') }}
     )
 

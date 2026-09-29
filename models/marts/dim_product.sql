@@ -6,7 +6,19 @@
 
 with
     products as (
-        select *
+        select
+            product_id
+            , product_name
+            , product_number
+            , color
+            , size
+            , product_line
+            , product_class
+            , product_style
+            , standard_cost
+            , list_price
+            , subcategory_name
+            , category_name
         from {{ ref('int_products') }}
     )
 

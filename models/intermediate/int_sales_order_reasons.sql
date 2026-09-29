@@ -6,12 +6,15 @@
 
 with
     order_headers as (
-        select *
+        select
+            sales_order_id
         from {{ ref('stg_sales_sales_order_header') }}
     )
 
     , order_reasons as (
-        select *
+        select
+            sales_order_id
+            , sales_reason_id
         from {{ ref('stg_sales_sales_order_header_sales_reason') }}
     )
 

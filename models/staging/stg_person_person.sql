@@ -20,7 +20,16 @@ with
     )
 
     , final as (
-        select *
+        select
+            person_id
+            , person_type
+            , title
+            , first_name
+            , middle_name
+            , last_name
+            , suffix
+            , email_promotion
+            , modified_at
         from renamed
     )
 
