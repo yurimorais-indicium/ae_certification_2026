@@ -14,11 +14,18 @@ can be compared directly.
 
 ## Importing into Figma
 
-1. Open a Figma file and drag all five `.svg` files onto the canvas. Figma converts each into an
-   editable frame with real layers (every rectangle, label and bar is a separate object).
-2. Arrange the five frames side by side.
-3. Export with **File → Export frames to… → JPG** (or select the frames and use the Export panel).
-4. Save the JPEG into the `deliverables/` folder for submission.
+The submission needs **one** JPEG, so use the pre-assembled file:
+
+1. Drag **`dashboard_mockup_ALL.svg`** onto a Figma canvas. It already holds the five pages stacked
+   vertically with page labels, so nothing has to be arranged by hand.
+2. Select the imported frame, open the **Export** panel, choose **JPG** at **2x**, and export.
+3. Save it as `deliverables/dashboard_mockup.jpg`.
+
+The five single-page files (`dashboard_mockup_1_overview.svg` … `_5_explorer.svg`) are the same
+artwork split per page. Use them if a page needs editing, then regenerate the combined file.
+
+Every element arrives as a real Figma layer — each rectangle, label and bar is editable, nothing is
+flattened to an image.
 
 ## Design rules
 
