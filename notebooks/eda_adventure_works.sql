@@ -151,7 +151,20 @@ where billtoaddressid <> shiptoaddressid
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC ### 2.4 June 2014 is incomplete
+-- MAGIC ### 2.4 The series opens and closes with two unrepresentative months
+
+-- COMMAND ----------
+
+-- Active trading days per month at both ends of the series
+select
+    date_format(order_date, 'yyyy-MM') as year_month
+    , count(distinct order_date) as active_days
+    , count(distinct sales_order_id) as orders
+    , round(sum(gross_amount), 0) as gross_amount
+from fea_academy.adventure_works_marts.fct_sales
+where date_format(order_date, 'yyyy-MM') in ('2011-05', '2011-06', '2014-05', '2014-06')
+group by 1
+order by 1
 
 -- COMMAND ----------
 
@@ -173,9 +186,17 @@ order by 1, 2, 3
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC **Insight:** June 2014 has 939 orders but only **$49k of gross sales**: it contains **only online accessories and
--- MAGIC clothing — no bikes and no reseller orders**, while May 2014 had $5.4M. The extraction was likely cut mid-month.
--- MAGIC **Year-over-year comparisons must use January–May** (like-for-like), and June 2014 is flagged as incomplete.
+-- MAGIC **Insight:** both ends of the time series are unrepresentative, for two *different* reasons:
+-- MAGIC
+-- MAGIC - **May 2011 is a stub month**: it holds a single trading day (2011-05-31) with 43 orders and $503.8k. Plotted as a
+-- MAGIC   full month it is *higher* than the first complete month (June 2011: $458.9k over 30 days), so the series opens with
+-- MAGIC   an apparent decline that is purely an artifact.
+-- MAGIC - **June 2014 is not a mid-month cutoff.** All 30 days are present with a steady ~30 orders/day. The $49k collapse
+-- MAGIC   happens because the month contains **no reseller orders and no bikes at all** — only online accessories and
+-- MAGIC   clothing, averaging $52 per order against $874 in May 2014. It is a **channel and catalog truncation**, not a date one.
+-- MAGIC
+-- MAGIC **Consequence:** year-over-year comparisons use **January–May** (like-for-like), and both endpoints are annotated on
+-- MAGIC any full-range time series so the cliff is not read as a business collapse.
 
 -- COMMAND ----------
 
@@ -532,15 +553,62 @@ group by 1
 -- COMMAND ----------
 
 -- MAGIC %md
+-- MAGIC ### 8.1 Does the promotion itself lift the order, or is it just the product mix?
+
+-- COMMAND ----------
+
+-- Every promotion order is a bike order, so promotions can only be judged against OTHER BIKE ORDERS
+with
+    promotion_orders as (
+        select distinct bridge.sales_order_id
+        from fea_academy.adventure_works_marts.bridge_sales_order_reason as bridge
+        inner join fea_academy.adventure_works_marts.dim_sales_reason as reasons
+            on bridge.sales_reason_sk = reasons.sales_reason_sk
+        where reasons.sales_reason_name = 'On Promotion'
+    )
+
+    , online_orders as (
+        select
+            sales.sales_order_id
+            , max(case when products.category_name = 'Bikes' then 1 else 0 end) as has_bike
+            , max(case when promotion_orders.sales_order_id is not null then 1 else 0 end) as is_promotion
+            , sum(sales.net_amount) as net_amount
+        from fea_academy.adventure_works_marts.fct_sales as sales
+        inner join fea_academy.adventure_works_marts.dim_product as products
+            on sales.product_sk = products.product_sk
+        left join promotion_orders
+            on sales.sales_order_id = promotion_orders.sales_order_id
+        where sales.is_online_order
+        group by sales.sales_order_id
+    )
+
+select
+    case when has_bike = 1 then 'Bike order' else 'No bike' end as basket
+    , case when is_promotion = 1 then 'On Promotion' else 'No promotion' end as promotion
+    , count(*) as orders
+    , round(avg(net_amount), 2) as avg_order_value
+from online_orders
+group by 1, 2
+order by 1, 2
+
+-- COMMAND ----------
+
+-- MAGIC %md
 -- MAGIC **Insight:**
 -- MAGIC - **Price** is the most declared reason (17,473 online orders), followed by **On Promotion** (3,515 orders, $6.4M).
 -- MAGIC   4,647 online orders (17%) have no reason at all.
 -- MAGIC - Answer to question f: **Water Bottle - 30 oz.** is the product with the most units bought for the Promotion
--- MAGIC   reason (546 units), followed by Road Bottle Cage (416) and AWC Logo Cap (301).
+-- MAGIC   reason (546 units), followed by Road Bottle Cage (416) and AWC Logo Cap (301). Note this ranks *units*, so cheap
+-- MAGIC   add-ons win: by revenue, **bikes are 98.6% of promotion sales** and the bottles are under 1%.
+-- MAGIC - **Promotion is only ever recorded on bike orders** — all 3,515 of them contain a bike, and not a single
+-- MAGIC   accessory-only order carries the reason. Comparing promotion orders against "all other online orders" is therefore
+-- MAGIC   a **product-mix illusion**: it would show a +90% uplift that is really just bikes vs. bottles.
+-- MAGIC - Controlling for that, the effect **reverses**: promotion orders average **$1,810** against **$1,913** for
+-- MAGIC   comparable non-promotion bike orders — **5% below**, on a near-identical basket (2.10 vs 2.16 lines).
 -- MAGIC - **Orders declared as "On Promotion" received 0% discount.** Discounts exist only in 2.7% of all order lines
 -- MAGIC   (0.48% of gross sales). The promotion the customer mentions is **not linked to any recorded price benefit**, so
--- MAGIC   today the company **cannot measure promotion ROI** — a key argument for the Commercial Director, who wants to invest
--- MAGIC   in promotions.
+-- MAGIC   today the company **cannot measure promotion ROI** — and the one proxy we can build suggests promotions are not
+-- MAGIC   lifting order value at all. This is the key argument for the Commercial Director, who wants to invest in promotions.
 -- MAGIC - Marketing reasons: **Magazine Advertisement, Demo Event and Sponsorship have zero orders**, and Television
 -- MAGIC   Advertisement brought 722 orders but only $27k. Marketing spend should be reviewed against these results.
 

@@ -1,0 +1,9 @@
+version: 2
+
+data_tests:
+  - name: assert_store_twin_rows_never_both_sell
+    description: >
+      Guards the known source grain quirk where each of the 635 selling resellers appears twice in
+      sales_customer under the same store_id. The pattern is safe only while the second row never
+      carries orders; if it ever did, store-level revenue would split across two customer keys and
+      every customer ranking would understate the store.

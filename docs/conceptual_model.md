@@ -71,7 +71,15 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
 2. **Sales reason is many-to-many.** An order can have 0 to 3 reasons (8,453 orders have none; 4,482 have more than one). Joining reasons directly to the fact would duplicate revenue, so reasons are modeled through `bridge_sales_order_reason`. Orders without a reason are linked to a `No reason` member so filters stay complete. When filtering by reason, totals per reason are correct; the sum across reasons is not additive (an order with two reasons counts in both).
 3. **Orders without a credit card** (1,131) point to a `No credit card` member in `dim_credit_card`.
 4. **Location = ship-to address.** Bill-to and ship-to differ in only 99 of 31,465 orders; the ship-to address represents where the sale was delivered.
-5. **Customer name and type.** Customers linked to a store are resellers (`customer_type = 'Store'`) and are named after the store — the linked person is only the store contact (`person_type = 'SC'`). All other customers are `Individual` and use the person's full name. Resellers are 635 customers with 3,806 orders but ~73% of net revenue; the 701 store-only customer records have no orders.
+5. **Customer name and type.** Customers linked to a store are resellers (`customer_type = 'Store'`) and are named after the store — the linked person is only the store contact (`person_type = 'SC'`). All other customers are `Individual` and use the person's full name. Resellers are 635 selling stores with 3,806 orders but ~73% of gross revenue.
+
+   **Known source grain quirk:** `sales_customer` holds **two customer records per selling store** (same `store_id` and
+   name) — one carrying the store-contact `person_id` and all of the orders, one with no contact and no orders. All 635
+   selling stores follow this pattern exactly. `dim_customer` therefore has 19,820 rows but represents ~19,185 real
+   customers. Of the 701 rows with no orders, **635 are these inactive twins and only 66 are genuinely inactive stores**.
+   The dimension stays at one row per `customer_id` (faithful to the source), and because the twin never carries orders
+   it cannot double-count revenue: every fact-based metric is unaffected. Counting customers must be done from
+   `fct_sales` (19,119 purchasing customers), never from the dimension row count.
 6. **Order status** is kept as degenerate attributes in the fact (code + description), as it is an order-level attribute with only 6 possible values. Currently all orders are `Shipped`.
 7. **Total transaction value = gross revenue** (`gross_amount`). It is the headline metric for questions a, c, d and e and matches the audited figure. Net revenue (`net_amount`) is used for the average order value (question b).
 8. **Header-level amounts** (`taxamt`, `freight`, `totaldue`) are not included in the fact, as they would require allocation across lines and are not needed by the business questions.
