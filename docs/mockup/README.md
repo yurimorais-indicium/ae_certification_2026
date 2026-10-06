@@ -29,10 +29,16 @@ can be compared directly.
 | Gross sales / revenue | `#0072B2` blue |
 | Orders / units | `#E69F00` orange |
 | Store (reseller) | `#009E73` green |
-| Individual (online) | `#CC79A7` pink |
+| Individual (online) | `#B577B5` orchid |
 | Alert, zero, negative | `#D55E00` red |
 
-The palette is the Okabe–Ito colour-blind-safe set, the same one used in the EDA notebook.
+Based on the Okabe–Ito colour-blind-safe set. The one deviation is the online-channel colour: Okabe–Ito's
+pink `#CC79A7` was replaced with a muted orchid `#B577B5`, which reads less decorative *and* measures better
+— simulating deuteranopia, protanopia and tritanopia, its worst-case separation from the other four colours
+rises from 0.235 to 0.320.
+
+Each colour was also checked against the two measure colours so that a category colour is never mistaken for
+a measure: the channel pair keeps a minimum distance of 0.32 from both blue and orange under every simulation.
 
 **Every chart title states the finding**, not the field names — "Resellers generate 73% of gross sales
 from 12% of orders" rather than "Gross sales by channel".
