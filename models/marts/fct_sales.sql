@@ -39,6 +39,12 @@ with
             -- orders without credit card point to the 'No credit card' member (-1)
             , {{ dbt_utils.generate_surrogate_key(['coalesce(credit_card_id, -1)']) }} as credit_card_sk
             , order_date
+            -- reseller orders are booked in one monthly batch, often on the 1st of the next month;
+            -- one day back assigns the batch to the month it closes
+            , case
+                when is_online_order then order_date
+                else date_sub(order_date, 1)
+            end as closing_date
             , ship_date
             , due_date
             , order_status

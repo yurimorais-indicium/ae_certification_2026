@@ -66,6 +66,19 @@ models:
               arguments:
                 to: ref('dim_date')
                 field: date_day
+      - name: closing_date
+        description: >
+          Month-closing date. Equals order_date for online orders; for reseller orders it is
+          order_date minus one day, because each monthly reseller batch is booked at month end,
+          sometimes on the 1st of the next month. Use it for monthly series and
+          like-for-like comparisons; calendar-year figures (the audited basis) use order_date.
+          Foreign key to dim_date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
       - name: ship_date
         description: Date the order was shipped.
       - name: due_date
