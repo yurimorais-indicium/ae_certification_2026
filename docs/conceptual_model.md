@@ -88,14 +88,14 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
 
 ## Business question coverage
 
-| # | Question | Answered by |
-|---|---|---|
-| a | Orders, quantity and transaction value (`gross_amount`) by product, card type, sales reason, date, customer, status, city, state, country | `fct_sales` + all dimensions + bridge |
-| b | Products with the highest average order value by month, year, city, state, country | `fct_sales.net_amount` / distinct `sales_order_id`, `dim_product`, `dim_date`, `dim_location` |
-| c | Top 10 customers by transaction value (`gross_amount`) | `fct_sales` + `dim_customer` |
-| d | Top 5 cities by transaction value (`gross_amount`) | `fct_sales` + `dim_location` |
-| e | Orders, quantity and transaction value by month and year | `fct_sales` + `dim_date` (`closing_date` for months, `order_date` for calendar years) |
-| f | Product with the most units purchased for the "Promotion" reason | `fct_sales` + bridge + `dim_sales_reason` (`sales_reason_type = 'Promotion'`) + `dim_product` |
+| # | Question | Answered by | In the dashboard |
+|---|---|---|---|
+| a | Orders, quantity and transaction value (`gross_amount`) by product, card type, sales reason, date, customer, status, city, state, country | `fct_sales` + all dimensions + bridge | Page 4 (Sales Explorer): a breakdown selector for product, category, card type, sales reason, customer, channel, status, city, state, country, month and year |
+| b | Products with the highest average order value by month, year, city, state, country | `fct_sales.net_amount` / distinct `sales_order_id`, `dim_product`, `dim_date`, `dim_location` | Page 3: top 10 products by average order value; month, state and city come from the filter pane |
+| c | Top 10 customers by transaction value (`gross_amount`) | `fct_sales` + `dim_customer` | Page 2: top 10 customers, filterable by product, card type, sales reason, date, status, city, state and country |
+| d | Top 5 cities by transaction value (`gross_amount`) | `fct_sales` + `dim_location` | Page 2: top 5 cities, with the same filters plus customer |
+| e | Orders, quantity and transaction value by month and year | `fct_sales` + `dim_date` (`closing_date` for months, `order_date` for calendar years) | Page 1: monthly sales by channel, January–April by year and a table by calendar year |
+| f | Product with the most units purchased for the "Promotion" reason | `fct_sales` + bridge + `dim_sales_reason` (`sales_reason_type = 'Promotion'`) + `dim_product` | Page 3: top products on promotion |
 
 ## Data quality anchor
 
