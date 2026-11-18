@@ -24,6 +24,8 @@ fea_academy.adventure_works (raw)
   marts (tables)        fct_* / dim_* / bridge_*   star schema consumed by the BI tool
 ```
 
+The project has 27 models: 14 staging views, 5 intermediate views and 8 mart tables.
+
 | Layer | Schema | Materialization | Responsibility |
 |---|---|---|---|
 | Staging | `<target_schema>_staging` | view | Snake_case names, explicit casts (string dates → `date`, double keys → `bigint`, money → `decimal(19,4)`), drop technical and sensitive columns |
@@ -48,14 +50,21 @@ Star schema at **sales order line** grain. Full description in
 
 ## Key business rules
 
+The complete reference, with formulas and the evidence behind each rule, is
+[docs/business_rules.md](docs/business_rules.md). The rules that change the numbers:
+
 - **Total transaction value = gross revenue** (`gross_amount = order_quantity × unit_price`).
   Net revenue (`net_amount = gross_amount − discount_amount`) is used for the average order value.
+- **Two dates.** `order_date` drives calendar-year totals (the audited basis). `closing_date` drives monthly
+  trends: reseller orders arrive as one batch per month, often booked on the 1st of the next month, so they are
+  dated one day back, to the month their batch closes. Online orders keep their own date.
 - **Sales reasons are many-to-many** (0–3 per order) and are modeled through a bridge table so revenue
   is never duplicated. Totals per reason are correct; the sum across reasons is not additive.
 - **Unknown members:** orders without a credit card → `No credit card`; orders without a reason → `No reason`.
 - **Location** uses the order's ship-to address.
 - **Customers linked to a store are resellers** (`customer_type = 'Store'`) and are named after the store;
-  all other customers are `Individual`.
+  all other customers are `Individual`. The source holds two customer records per selling store and only one
+  ever orders, so customers are always counted from `fct_sales`, never from the row count of `dim_customer`.
 - **Order status** codes are translated (1 In process … 5 Shipped, 6 Cancelled).
 - **Data fix:** Namibia's ISO code `NA` was loaded as null during ingestion; it is restored in staging and
   kept as a warning-level source test for visibility.
@@ -69,6 +78,16 @@ Star schema at **sales order line** grain. Full description in
 | Referential integrity | marts | every `fct_sales` foreign key → its dimension |
 | Data quality | intermediate and marts | `equal_rowcount` (joins never duplicate rows), `net = gross − discount`, `accepted_values`, `accepted_range` |
 | Audit reconciliation | `tests/assert_gross_sales_2011_matches_audit.sql` | 2011 gross sales = $12,646,112.16 |
+| Source grain guard | `tests/assert_store_twin_rows_never_both_sell.sql` | a store never orders through both of its customer records |
+
+A full `dbt test` is expected to finish with **one warning and no errors**: the documented Namibia source
+issue (`source_not_null_adventure_works_person_countryregion_countryregioncode`).
+
+## Exploratory analysis
+
+[notebooks/eda_adventure_works.sql](notebooks/eda_adventure_works.sql) is a Databricks notebook (SQL) that profiles
+the data, documents each data-quality finding and addresses the six business questions, with a commentary on every
+insight. Its conclusions drive the KPI selection of the dashboard.
 
 ## How to run
 
@@ -107,10 +126,13 @@ dbt docs generate; dbt docs serve  # documentation site and lineage graph
 │   ├── staging/        _adventure_works_sources.yml + stg_<schema>_<table>.sql/.yml
 │   ├── intermediate/   int_<entity>.sql/.yml
 │   └── marts/          fct_*, dim_*, bridge_* (.sql/.yml)
-├── tests/              singular tests (audit reconciliation)
-├── docs/               conceptual data model
+├── tests/              singular tests: audit reconciliation, store-twin guard
+├── notebooks/          exploratory data analysis (Databricks SQL notebook)
+├── docs/
+│   ├── business_rules.md      metric definitions and business rules
+│   └── conceptual_model.md    star schema description (diagram: conceptual_model.drawio)
 ├── dbt_project.yml / packages.yml / profiles.yml
-├── requirements.txt / .env.example
+└── requirements.txt / .env.example
 ```
 
 ## Conventions

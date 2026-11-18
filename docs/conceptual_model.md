@@ -38,7 +38,8 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
 | `customer_sk` | FK → `dim_customer` |
 | `ship_to_location_sk` | FK → `dim_location` (ship-to address) |
 | `credit_card_sk` | FK → `dim_credit_card` |
-| `order_date` | FK → `dim_date` |
+| `order_date` | FK → `dim_date` (calendar-year basis, audited) |
+| `closing_date` | FK → `dim_date` (second role). Equals `order_date` for online orders; `order_date − 1 day` for reseller orders. Used for monthly series and like-for-like comparisons |
 | `ship_date`, `due_date` | Order dates |
 | `order_status`, `order_status_name` | Order status code and description |
 | `is_online_order` | Online vs. sales-rep order |
@@ -82,7 +83,8 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
    `fct_sales` (19,119 purchasing customers), never from the dimension row count.
 6. **Order status** is kept as degenerate attributes in the fact (code + description), as it is an order-level attribute with only 6 possible values. Currently all orders are `Shipped`.
 7. **Total transaction value = gross revenue** (`gross_amount`). It is the headline metric for questions a, c, d and e and matches the audited figure. Net revenue (`net_amount`) is used for the average order value (question b).
-8. **Header-level amounts** (`taxamt`, `freight`, `totaldue`) are not included in the fact, as they would require allocation across lines and are not needed by the business questions.
+8. **Two date roles.** Reseller orders arrive as one batch per month, booked at month end or on the 1st of the next month, so a calendar-month series puts some batches in the wrong month. `closing_date` moves each reseller order one day back so every batch lands in the month it closes. `dim_date` is a role-playing dimension: `order_date` keeps calendar-year totals on the audited basis, `closing_date` serves monthly trends.
+9. **Header-level amounts** (`taxamt`, `freight`, `totaldue`) are not included in the fact, as they would require allocation across lines and are not needed by the business questions.
 
 ## Business question coverage
 
@@ -92,9 +94,9 @@ Grain: **one row per sales order line** (`salesorderdetailid`). Order-level attr
 | b | Products with the highest average order value by month, year, city, state, country | `fct_sales.net_amount` / distinct `sales_order_id`, `dim_product`, `dim_date`, `dim_location` |
 | c | Top 10 customers by transaction value (`gross_amount`) | `fct_sales` + `dim_customer` |
 | d | Top 5 cities by transaction value (`gross_amount`) | `fct_sales` + `dim_location` |
-| e | Orders, quantity and transaction value by month and year | `fct_sales` + `dim_date` |
+| e | Orders, quantity and transaction value by month and year | `fct_sales` + `dim_date` (`closing_date` for months, `order_date` for calendar years) |
 | f | Product with the most units purchased for the "Promotion" reason | `fct_sales` + bridge + `dim_sales_reason` (`sales_reason_type = 'Promotion'`) + `dim_product` |
 
 ## Data quality anchor
 
-Gross sales for 2011 (`sum(gross_amount)` where `year(order_date) = 2011`) must equal **$12,646,112.16**, as verified by the accounting audit team. Validated against the raw data during profiling; it will be enforced as a dbt test on `fct_sales`.
+Gross sales for 2011 (`sum(gross_amount)` where `year(order_date) = 2011`) must equal **$12,646,112.16**, as verified by the accounting audit team. Validated against the raw data during profiling and enforced as the dbt test `assert_gross_sales_2011_matches_audit` on `fct_sales`.
