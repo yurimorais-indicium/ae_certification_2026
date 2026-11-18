@@ -1,10 +1,11 @@
 # dbt
 target/
 dbt_packages/
+dbt_internal_packages/
 logs/
 .user.yml
 
-# Credenciais
+# Credentials
 .env
 .env.*
 !.env.example
@@ -13,9 +14,22 @@ logs/
 .venv/
 __pycache__/
 
-# Entregáveis e material do curso
+# Editor settings
+.vscode/
+
+# Deliverables and course material (final files are submitted as a ZIP, not through Git)
 deliverables/
 *.pdf
 *.pbix
 *.mp4
 *.pptx
+
+# Power BI report sources (local only: the cache holds imported data and the connection
+# settings point to the workspace; the deliverable is the .pbix)
+powerbi/
+
+# Internal working documents
+docs/visual_identity.md
+docs/dashboard_proposal.md
+docs/presentation.html
+docs/video_script.md
